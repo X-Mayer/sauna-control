@@ -1,0 +1,2 @@
+global.set('desiredTemp', msg.payload);
+return msg;

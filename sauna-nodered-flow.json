@@ -1,0 +1,131 @@
+[
+  {
+    "id": "1",
+    "type": "tab",
+    "label": "Sauna Temperature Control"
+  },
+  {
+    "id": "2",
+    "type": "rpi-dht22",
+    "z": "1",
+    "name": "DHT11 Sensor",
+    "topic": "rpi-dht22",
+    "dht": "11",
+    "pintype": "0",
+    "pin": "4",
+    "x": 150,
+    "y": 100,
+    "wires": [
+      [
+        "3"
+      ],
+      []
+    ]
+  },
+  {
+    "id": "3",
+    "type": "function",
+    "z": "1",
+    "name": "Temperature Logic",
+    "func": "var currentTemp = msg.payload;\nvar desiredTemp = global.get('desiredTemp') || 70; // Default to 70°C\n\nif (currentTemp < desiredTemp) {\n    // Turn on heating, turn off cooling\n    return [{payload: true}, {payload: false}];\n} else if (currentTemp > desiredTemp) {\n    // Turn off heating, turn on cooling\n    return [{payload: false}, {payload: true}];\n} else {\n    // Maintain current state\n    return [{payload: false}, {payload: false}];\n}",
+    "outputs": 2,
+    "noerr": 0,
+    "x": 350,
+    "y": 100,
+    "wires": [
+      [
+        "4"
+      ],
+      [
+        "5"
+      ]
+    ]
+  },
+  {
+    "id": "4",
+    "type": "rpi-gpio out",
+    "z": "1",
+    "name": "Heating Relay",
+    "pin": "35",
+    "set": true,
+    "level": "0",
+    "freq": "",
+    "out": "out",
+    "x": 550,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "5",
+    "type": "rpi-gpio out",
+    "z": "1",
+    "name": "Cooling Relay",
+    "pin": "37",
+    "set": true,
+    "level": "0",
+    "freq": "",
+    "out": "out",
+    "x": 550,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "6",
+    "type": "ui_slider",
+    "z": "1",
+    "name": "Temperature Slider",
+    "label": "Desired Temperature",
+    "tooltip": "",
+    "group": "7",
+    "order": 1,
+    "width": 0,
+    "height": 0,
+    "pas": 1,
+    "min": 30,
+    "max": "100",
+    "step": 1,
+    "x": 150,
+    "y": 200,
+    "wires": [
+      [
+        "8"
+      ]
+    ]
+  },
+  {
+    "id": "7",
+    "type": "ui_group",
+    "z": "",
+    "name": "Default Group",
+    "tab": "9",
+    "disp": true,
+    "width": "6",
+    "order": 1
+  },
+  {
+    "id": "8",
+    "type": "function",
+    "z": "1",
+    "name": "Set Desired Temp",
+    "func": "global.set('desiredTemp', msg.payload);\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 350,
+    "y": 200,
+    "wires": [
+      [
+        "3"
+      ]
+    ]
+  },
+  {
+    "id": "9",
+    "type": "ui_tab",
+    "z": "",
+    "name": "Home",
+    "icon": "dashboard",
+    "order": 1,
+    "disabled": false,
+    "hidden": false
+  }
+]
